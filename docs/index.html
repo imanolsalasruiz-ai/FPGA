@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FPGA, Blockchain, Big Data y Criptomonedas</title>
+
+  <!-- GOOGLE FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ======= VARIABLES ======= */
+    :root{
+      --bg1: #071126;
+      --bg2: #0f2740;
+      --accent: #66fcf1;
+      --accent-2: #9b5cf6;
+      --muted: #cbd5e1;
+      --card-bg: rgba(255,255,255,0.04);
+      --glass: rgba(255,255,255,0.03);
+      --radius: 12px;
+      --transition: 300ms ease;
+    }
+
+    /* ======= RESETS ======= */
+    *{box-sizing:border-box; margin:0; padding:0; font-family: 'Poppins', sans-serif; scroll-behavior:smooth;}
+    html,body{height:100%;}
+    body{
+      background: linear-gradient(135deg, var(--bg1) 0%, #08182a 35%, var(--bg2) 100%);
+      color: var(--muted);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.65;
+      padding-bottom:120px;
+    }
+
+    /* ======= HEADER / NAV ======= */
+    header{
+      position: sticky;
+      top:0;
+      z-index:1000;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(180deg, rgba(10,12,20,0.6), rgba(10,12,20,0.35));
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+    }
+    .header-inner{
+      max-width:1200px; margin:0 auto; padding:18px 22px; display:flex; align-items:center; gap:18px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+    }
+    .brand .logo{
+      width:48px; height:48px; border-radius:10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display:flex; align-items:center; justify-content:center; box-shadow: 0 6px 18px rgba(107,255,244,0.06);
+      font-weight:700; color:#03121a;
+    }
+    .brand h1{ color:var(--accent); font-size:1.05rem; letter-spacing:0.6px; }
+    nav{ margin-left:auto; display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+    nav a{
+      color:var(--muted); text-decoration:none; padding:8px 12px; border-radius:8px;
+      transition: all var(--transition); font-weight:500; font-size:0.95rem;
+    }
+    nav a:hover{ background: rgba(102,252,241,0.08); color:var(--accent); transform:translateY(-2px); }
+    nav a.active{ background: linear-gradient(90deg, rgba(102,252,241,0.07), rgba(155,92,246,0.06)); color:var(--accent); box-shadow: 0 6px 20px rgba(107,255,244,0.03); }
+
+    /* ======= MAIN SECTIONS ======= */
+    main{ max-width:1100px; margin:28px auto; padding:0 20px; }
+    section{ padding:56px 0; opacity:0; transform: translateY(18px); transition: all 600ms cubic-bezier(.2,.9,.2,1); }
+    section.in-view{ opacity:1; transform: translateY(0); }
+
+    .section-inner{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:22px; border-radius:16px; box-shadow: 0 8px 30px rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.02); }
+
+    h2{
+      color:var(--accent);
+      font-size:1.25rem;
+      margin-bottom:12px;
+      display:inline-block;
+      padding:6px 12px;
+      border-radius:10px;
+      background: linear-gradient(90deg, rgba(102,252,241,0.04), rgba(155,92,246,0.03));
+      box-shadow: 0 6px 18px rgba(107,255,244,0.02);
+      letter-spacing:0.6px;
+    }
+
+    p, li { color:var(--muted); font-size:1rem; margin-bottom:12px; }
+    .lead{ font-size:1.05rem; color:#e6fbfa; margin-bottom:14px; }
+
+    /* ======= GRID / CARDS ======= */
+    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:18px; align-items:start; }
+    .card{ background: var(--card-bg); padding:18px; border-radius:14px; border:1px solid rgba(255,255,255,0.02); box-shadow: 0 6px 24px rgba(2,6,23,0.6); }
+    .card h3{ color:var(--accent-2); margin-bottom:8px; font-size:1rem; }
+    ul{ margin-left:18px; list-style: none; padding-left:0; }
+    ul li{ position:relative; padding-left:22px; margin-bottom:10px; }
+    ul li:before{ content:''; width:10px; height:10px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); border-radius:3px; position:absolute; left:0; top:7px; box-shadow: 0 6px 16px rgba(155,92,246,0.07); }
+
+    /* ======= VIDEO CONTAINER ======= */
+    .video-row{ display:flex; gap:16px; flex-wrap:wrap; justify-content:center; margin-top:12px; }
+    .video-frame{ width:100%; max-width:360px; height:205px; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.03); box-shadow:0 10px 30px rgba(0,0,0,0.5); transition: transform 300ms ease; }
+    .video-frame iframe{ width:100%; height:100%; display:block; }
+    .video-frame:hover{ transform: translateY(-6px) scale(1.02); }
+
+    /* ======= BUTTON VOLVER ARRIBA ======= */
+    .to-top{
+      position: fixed; right:22px; bottom:22px; background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      width:52px; height:52px; border-radius:14px; display:grid; place-items:center; color:#03121a; font-weight:700; cursor:pointer;
+      box-shadow: 0 10px 30px rgba(155,92,246,0.12); border:none; z-index:1200; transform: translateY(0); transition: all 280ms ease;
+    }
+    .to-top.hide{ opacity:0; transform: translateY(16px) scale(0.95); pointer-events:none; }
+    .to-top:hover{ transform: translateY(-6px) scale(1.03); }
+
+    /* ======= MENU HAMBURGER (MOBILE) ======= */
+    .hamburger{ display:none; background:transparent; border:none; cursor:pointer; color:var(--muted); font-size:1.05rem; }
+    @media (max-width:900px){
+      nav{ display:none; position:fixed; right:12px; top:70px; background: linear-gradient(180deg, rgba(10,12,20,0.9), rgba(8,14,26,0.88)); padding:12px; border-radius:10px; flex-direction:column; gap:6px; width:220px; box-shadow:0 12px 40px rgba(0,0,0,0.7); }
+      nav.show{ display:flex; }
+      .hamburger{ display:block; margin-left:auto; }
+      .header-inner{ gap:12px; }
+      .grid-2{ grid-template-columns: 1fr; }
+      .video-frame{ max-width:420px; height:240px; }
+    }
+
+    /* ======= ACCENT LINES & SUBTLE ANIM ======= */
+    .accent-line{
+      height:6px; border-radius:6px; margin:14px 0 6px 0;
+      background: linear-gradient(90deg, rgba(102,252,241,0.12), rgba(155,92,246,0.12));
+      box-shadow: 0 6px 30px rgba(102,252,241,0.02);
+    }
+
+    /* ======= FOOTER ======= */
+    footer{
+      margin-top:40px; padding:28px 20px; background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(2,6,23,0.55)); color:var(--muted);
+      border-top: 1px solid rgba(255,255,255,0.02);
+    }
+    footer .foot-inner{ max-width:1100px; margin:0 auto; display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap; }
+    footer p{ font-size:0.94rem; color:#9fb6bd; }
+
+    /* small helpers */
+    .muted{ color:#9fb6bd; }
+    .small{ font-size:0.9rem; color:#9fb6bd; }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="brand" aria-label="brand">
+        <div class="logo">F</div>
+        <h1>FPGA · Blockchain · Big Data</h1>
+      </div>
+
+      <button class="hamburger" id="hamburgerBtn" aria-label="menu">☰</button>
+
+      <nav id="mainNav" aria-label="main-navigation">
+        <a href="#inicio" class="nav-link">Inicio</a>
+        <a href="#historia" class="nav-link">Historia</a>
+        <a href="#usos" class="nav-link">Usos</a>
+        <a href="#ventajas" class="nav-link">Ventajas</a>
+        <a href="#construccion" class="nav-link">Construcción</a>
+        <a href="#criptomonedas" class="nav-link">Criptomonedas</a>
+        <a href="#futuro" class="nav-link">Futuro</a>
+        <a href="#conclusion" class="nav-link">Conclusión</a>
+        <a href="#videos" class="nav-link">Videos</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- INICIO -->
+    <section id="inicio" class="in-view">
+      <div class="section-inner">
+        <h2>Inicio</h2>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p class="lead">La convergencia entre <strong>FPGA</strong>, <strong>Blockchain</strong>, <strong>Big Data</strong> y <strong>Criptomonedas</strong> impulsa soluciones tecnológicas capaces de procesar, asegurar y monetizar información a gran escala. Esta sinergia es aplicada hoy en proyectos de alta eficiencia energética, finanzas descentralizadas, IoT y ciencia de datos.</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>¿Por qué importa esta convergencia?</h3>
+            <p>Las FPGA aceleran tareas especializadas (como el hashing o el procesamiento paralelo), Blockchain aporta trazabilidad e inmutabilidad, Big Data transforma datos en conocimiento y las criptomonedas habilitan modelos económicos nativos de la web3. Combinadas, ofrecen soluciones rápidas, trazables y potencialmente más eficientes.</p>
+            <ul>
+              <li>Optimización energética en minería y cálculos intensivos.</li>
+              <li>Seguridad criptográfica integrada en hardware.</li>
+              <li>Procesamiento de transacciones y análisis en tiempo real.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Casos de uso inmediatos</h3>
+            <ul>
+              <li>Minería eficiente y sostenible con FPGA.</li>
+              <li>Nodos de blockchain con aceleradores para validación rápida.</li>
+              <li>Plataformas de trading que analizan millones de eventos por segundo.</li>
+            </ul>
+            <p class="small">Este sitio sirve como guía introductoria y punto de inicio para proyectos académicos o prototipos industriales.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORIA -->
+    <section id="historia">
+      <div class="section-inner">
+        <h2>Historia</h2>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p>Las FPGA surgieron en los años ochenta como bloques lógicos programables, permitiendo reconfigurar hardware según la necesidad. Con los avances en tecnología y herramientas de síntesis, se convirtieron en piezas clave para computación acelerada. Paralelamente, el concepto de <em>Big Data</em> —procesar y extraer valor de grandes volúmenes de datos— tomó fuerza en los 2000, y la aparición de Bitcoin (2009) popularizó el uso de sistemas distribuidos y criptografía aplicada a monedas digitales.</p>
+        <p>En la última década se aceleró la relación entre estos mundos: FPGAs para acelerar cifrado y hashing en blockchains privadas, pipelines de Big Data que procesan transacciones en tiempo real y modelos económicos basados en criptoactivos. Esta historia de convergencia ha abierto nuevas áreas de investigación y startups tecnológicas.</p>
+      </div>
+    </section>
+
+    <!-- USOS Y APLICACIONES -->
+    <section id="usos">
+      <div class="section-inner">
+        <h2>Usos y Aplicaciones</h2>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p>Los usos abarcan desde la investigación científica hasta soluciones industriales y financieras. A continuación se amplía la lista con ejemplos prácticos y beneficios:</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Industria y Ciencia</h3>
+            <ul>
+              <li>Procesamiento de señales en tiempo real (visión, radar y telecomunicaciones).</li>
+              <li>Aceleración de modelos de IA en el edge para reducir latencia.</li>
+              <li>Simulaciones científicas que requieren paralelismo masivo.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Finanzas y Blockchain</h3>
+            <ul>
+              <li>Nodos de consenso que requieren pruebas criptográficas rápidas.</li>
+              <li>Smart contracts verificados en hardware para mayor confianza.</li>
+              <li>Análisis de riesgo y detección de fraude con pipelines Big Data.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="height:10px;"></div>
+        <p class="small">En investigación académica, muchas universidades usan FPGA para enseñar arquitectura de computadores y para prototipos de alto rendimiento; en la industria, se usan para reducir costos energéticos y acelerar procesos críticos.</p>
+      </div>
+    </section>
+
+    <!-- VENTAJAS Y DESVENTAJAS -->
+    <section id="ventajas">
+      <div class="section-inner">
+        <h2>Ventajas y Desventajas</h2>
+        <div class="accent-line" aria-hidden="true"></div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Ventajas</h3>
+            <ul>
+              <li>Alta velocidad por paralelismo y pipelines especializados.</li>
+              <li>Reconfigurabilidad: un mismo hardware puede adaptarse a múltiples algoritmos.</li>
+              <li>Mejor eficiencia energética frente a soluciones generalistas en tareas específicas.</li>
+              <li>Seguridad: posibilidad de integrar llaves criptográficas en hardware seguro.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Desventajas</h3>
+            <ul>
+              <li>Curva de aprendizaje: programación en VHDL/Verilog o herramientas de síntesis.</li>
+              <li>Costo inicial de diseño y validación para soluciones a medida.</li>
+              <li>Limitaciones de memoria en ciertos modelos y necesidad de arquitectura híbrida.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONSTRUCCIÓN -->
+    <section id="construccion">
+      <div class="section-inner">
+        <h2>Construcción</h2>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p>Construir un sistema que combine FPGA, Blockchain y Big Data implica varias capas: hardware, firmware, software y despliegue en red. Aquí se amplía el proceso con recomendaciones y herramientas:</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Nivel Hardware</h3>
+            <p>Selección de la FPGA (Xilinx/Intel/others), diseño de placas, y consideraciones térmicas y de energía. Herramientas: Vivado, Quartus, herramientas de layout y simulación.</p>
+          </div>
+
+          <div class="card">
+            <h3>Nivel Software</h3>
+            <p>Integración con módulos de Big Data (ETL, Kafka, Spark), bibliotecas criptográficas y APIs de blockchain. Lenguajes comunes: C/C++, Python, Rust para ciertas capas.</p>
+          </div>
+        </div>
+
+        <div style="height:8px;"></div>
+        <p class="small">Recomendación: prototipado rápido con placas de desarrollo, pruebas con datos sintéticos y luego escalado con pruebas de carga y seguridad antes de desplegar en producción.</p>
+      </div>
+    </section>
+
+    <!-- CRIPTOMONEDAS -->
+    <section id="criptomonedas">
+      <div class="section-inner">
+        <h2>Criptomonedas</h2>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p>Las <strong>criptomonedas</strong> son activos digitales que usan criptografía y, usualmente, tecnologías de libros distribuidos (blockchain). Su relación con FPGA y Big Data tiene varios frentes: minería, validación, análisis de mercado y nuevos modelos económicos como DeFi.</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Minería y Validación</h3>
+            <p>Las FPGA pueden ser empleadas en algoritmos de minería (hashing) con mayor eficiencia energética que CPUs en ciertas labores y menor consumo que algunas GPUs. En redes PoS (Proof of Stake) o modelos alternativos, las FPGA pueden acelerar funciones criptográficas usadas en validación de bloques.</p>
+            <ul>
+              <li>FPGA para hashing especializado y aceleración criptográfica.</li>
+              <li>Nodos con hardware de confianza para redes privadas.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Análisis y Mercado</h3>
+            <p>Big Data permite analizar volúmenes de transacciones, detectar patrones, y alimentar sistemas de trading algorítmico. Los datos en cadena (on-chain) combinados con datos off-chain ofrecen una visión completa para la gestión de riesgo y predicciones de mercado.</p>
+            <ul>
+              <li>Monitorización en tiempo real de transacciones y flujos de liquidez.</li>
+              <li>Modelos predictivos para precios y detección de comportamiento anómalo.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FUTURO -->
+    <section id="futuro">
+      <div class="section-inner">
+        <h2>Futuro</h2>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p>El futuro de esta convergencia apunta a una mayor integración con la nube (FPGA-as-a-service), IoT con aceleración hardware en el edge, y una fuerte adopción en sectores como salud, cadena de suministro y finanzas. Se espera también una tendencia hacia <em>minería verde</em> y validación con menos consumo energético.</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Principales tendencias</h3>
+            <ul>
+              <li>FPGA en nube para cargas heterogéneas.</li>
+              <li>Blockchains privadas para trazabilidad industrial.</li>
+              <li>Big Data con ML/AI para análisis predictivo en tiempo real.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Impacto social</h3>
+            <p>Mejoras en eficiencia, transparencia y nuevos modelos económicos pueden transformar industrias, pero requieren políticas para proteger privacidad, derechos y minimizar brechas tecnológicas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONCLUSION -->
+    <section id="conclusion">
+      <div class="section-inner">
+        <h2>Conclusión</h2>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p>La convergencia entre FPGA, Blockchain, Big Data y Criptomonedas permite construir sistemas más rápidos, seguros y con nuevas posibilidades de monetización y gobernanza. Sin embargo, también trae desafíos técnicos, éticos y sociales que deben ser abordados con investigación, normativas y educación. Implementaciones responsables pueden desbloquear eficiencia energética y nuevos servicios para la industria, la investigación y la sociedad en general.</p>
+      </div>
+    </section>
+
+    <!-- VIDEOS -->
+    <section id="videos">
+      <div class="section-inner">
+        <h2>Videos Relacionados</h2>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p class="small">Complementa lo leído con estos videos.</p>
+
+        <div class="video-row">
+          <div class="video-frame card">
+            <iframe src="https://www.youtube.com/embed/unERWj2lOvA" title="Video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+
+          <div class="video-frame card">
+            <!-- start at 13s: YouTube embed ignores &t param; for start use ?start=13 -->
+            <iframe src="https://www.youtube.com/embed/FmtyY2hmg04?start=13" title="Video 2" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+
+          <div class="video-frame card">
+            <iframe src="https://www.youtube.com/embed/_tCCsr4SBAY" title="Video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTON VOLVER ARRIBA -->
+  <button id="toTopBtn" class="to-top hide" title="Volver arriba">↑</button>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="foot-inner">
+      <div>
+        <p><strong>© 2025 Innovación Digital</strong> | Página creada por ChatGPT</p>
+        <p class="small">Recursos: Xilinx · Ethereum · IBM Big Data</p>
+      </div>
+      <div>
+        <p class="small">Hecho con HTML, CSS y JavaScript puro · Diseño moderno y responsive</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======= SCRIPTS ======= -->
+  <script>
+    // Simple JS to handle scroll animations, active nav link, hamburger and back-to-top button
+
+    // helper: select
+    const $ = (q, all = false) => all ? document.querySelectorAll(q) : document.querySelector(q);
+
+    // Sections observe for reveal on scroll
+    const sections = document.querySelectorAll('main section');
+    const options = { root: null, rootMargin: '0px', threshold: 0.12 };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+        }
+      });
+    }, options);
+
+    sections.forEach(s => observer.observe(s));
+
+    // Active nav link highlight on scroll
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sectionMap = {};
+    navLinks.forEach(a => {
+      const href = a.getAttribute('href');
+      if(href && href.startsWith('#')){
+        sectionMap[href] = document.querySelector(href);
+      }
+    });
+
+    function setActiveLink(){
+      const scrollPos = window.scrollY + window.innerHeight * 0.25;
+      let currentId = '';
+      for(const id in sectionMap){
+        const sec = sectionMap[id];
+        if(sec && sec.offsetTop <= scrollPos){
+          currentId = id;
+        }
+      }
+      navLinks.forEach(l => l.classList.remove('active'));
+      if(currentId){
+        const match = document.querySelector('nav a[href="'+currentId+'"]');
+        if(match) match.classList.add('active');
+      }
+    }
+
+    window.addEventListener('scroll', setActiveLink);
+    window.addEventListener('load', setActiveLink);
+
+    // Back to top button logic
+    const toTopBtn = document.getElementById('toTopBtn');
+    window.addEventListener('scroll', () => {
+      if(window.scrollY > 350){
+        toTopBtn.classList.remove('hide');
+      } else {
+        toTopBtn.classList.add('hide');
+      }
+    });
+
+    toTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // Hamburger for mobile
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mainNav = document.getElementById('mainNav');
+    hamburgerBtn.addEventListener('click', () => {
+      mainNav.classList.toggle('show');
+    });
+
+    // Close mobile nav when clicking a link
+    document.querySelectorAll('nav a').forEach(a => {
+      a.addEventListener('click', () => mainNav.classList.remove('show'));
+    });
+
+    // Smooth in-page anchors (for some browsers)
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e){
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if(target) {
+          const y = target.getBoundingClientRect().top + window.scrollY - 12;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      });
+    });
+
+  </script>
+</body>
+</html>
