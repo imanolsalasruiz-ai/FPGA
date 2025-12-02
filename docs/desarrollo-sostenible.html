@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Desarrollo Sostenible - FPGA, Blockchain, Big Data y Criptomonedas</title>
+
+  <!-- GOOGLE FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ======= VARIABLES ======= */
+    :root{
+      --bg1: #071126;
+      --bg2: #0f2740;
+      --accent: #66fcf1;
+      --accent-2: #9b5cf6;
+      --muted: #cbd5e1;
+      --card-bg: rgba(255,255,255,0.04);
+      --glass: rgba(255,255,255,0.03);
+      --radius: 12px;
+      --transition: 300ms ease;
+    }
+
+    /* ======= RESETS ======= */
+    *{box-sizing:border-box; margin:0; padding:0; font-family: 'Poppins', sans-serif; scroll-behavior:smooth;}
+    html,body{height:100%;}
+    body{
+      background: linear-gradient(135deg, var(--bg1) 0%, #08182a 35%, var(--bg2) 100%);
+      color: var(--muted);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.65;
+      padding-bottom:120px;
+    }
+
+    /* ======= HEADER / NAV ======= */
+    header{
+      position: sticky;
+      top:0;
+      z-index:1000;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(180deg, rgba(10,12,20,0.6), rgba(10,12,20,0.35));
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+    }
+    .header-inner{
+      max-width:1200px; margin:0 auto; padding:18px 22px; display:flex; align-items:center; gap:18px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+    }
+    .brand .logo{
+      width:48px; height:48px; border-radius:10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display:flex; align-items:center; justify-content:center; box-shadow: 0 6px 18px rgba(107,255,244,0.06);
+      font-weight:700; color:#03121a;
+    }
+    .brand h1{ color:var(--accent); font-size:1.05rem; letter-spacing:0.6px; }
+    nav{ margin-left:auto; display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+    nav a{
+      color:var(--muted); text-decoration:none; padding:8px 12px; border-radius:8px;
+      transition: all var(--transition); font-weight:500; font-size:0.95rem;
+    }
+    nav a:hover{ background: rgba(102,252,241,0.08); color:var(--accent); transform:translateY(-2px); }
+    nav a.active{ background: linear-gradient(90deg, rgba(102,252,241,0.07), rgba(155,92,246,0.06)); color:var(--accent); box-shadow: 0 6px 20px rgba(107,255,244,0.03); }
+
+    /* ======= MAIN SECTIONS ======= */
+    main{ max-width:1100px; margin:28px auto; padding:0 20px; }
+    section{ padding:56px 0; opacity:0; transform: translateY(18px); transition: all 600ms cubic-bezier(.2,.9,.2,1); }
+    section.in-view{ opacity:1; transform: translateY(0); }
+
+    .section-inner{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:22px; border-radius:16px; box-shadow: 0 8px 30px rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.02); }
+
+    h2{
+      color:var(--accent);
+      font-size:1.25rem;
+      margin-bottom:12px;
+      display:inline-block;
+      padding:6px 12px;
+      border-radius:10px;
+      background: linear-gradient(90deg, rgba(102,252,241,0.04), rgba(155,92,246,0.03));
+      box-shadow: 0 6px 18px rgba(107,255,244,0.02);
+      letter-spacing:0.6px;
+    }
+
+    h3{
+      color:var(--accent-2);
+      font-size:1.1rem;
+      margin-bottom:12px;
+      margin-top:20px;
+    }
+
+    p, li { color:var(--muted); font-size:1rem; margin-bottom:12px; }
+    .lead{ font-size:1.05rem; color:#e6fbfa; margin-bottom:14px; }
+
+    /* ======= GRID / CARDS ======= */
+    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:18px; align-items:start; }
+    .card{ background: var(--card-bg); padding:18px; border-radius:14px; border:1px solid rgba(255,255,255,0.02); box-shadow: 0 6px 24px rgba(2,6,23,0.6); }
+    .card h3{ color:var(--accent-2); margin-bottom:8px; font-size:1rem; }
+    ul{ margin-left:18px; list-style: none; padding-left:0; }
+    ul li{ position:relative; padding-left:22px; margin-bottom:10px; }
+    ul li:before{ content:''; width:10px; height:10px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); border-radius:3px; position:absolute; left:0; top:7px; box-shadow: 0 6px 16px rgba(155,92,246,0.07); }
+
+    /* ======= BUTTON VOLVER ARRIBA ======= */
+    .to-top{
+      position: fixed; right:22px; bottom:22px; background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      width:52px; height:52px; border-radius:14px; display:grid; place-items:center; color:#03121a; font-weight:700; cursor:pointer;
+      box-shadow: 0 10px 30px rgba(155,92,246,0.12); border:none; z-index:1200; transform: translateY(0); transition: all 280ms ease;
+    }
+    .to-top.hide{ opacity:0; transform: translateY(16px) scale(0.95); pointer-events:none; }
+    .to-top:hover{ transform: translateY(-6px) scale(1.03); }
+
+    /* ======= MENU HAMBURGER (MOBILE) ======= */
+    .hamburger{ display:none; background:transparent; border:none; cursor:pointer; color:var(--muted); font-size:1.05rem; }
+    @media (max-width:900px){
+      nav{ display:none; position:fixed; right:12px; top:70px; background: linear-gradient(180deg, rgba(10,12,20,0.9), rgba(8,14,26,0.88)); padding:12px; border-radius:10px; flex-direction:column; gap:6px; width:220px; box-shadow:0 12px 40px rgba(0,0,0,0.7); }
+      nav.show{ display:flex; }
+      .hamburger{ display:block; margin-left:auto; }
+      .header-inner{ gap:12px; }
+      .grid-2{ grid-template-columns: 1fr; }
+    }
+
+    /* ======= ACCENT LINES & SUBTLE ANIM ======= */
+    .accent-line{
+      height:6px; border-radius:6px; margin:14px 0 6px 0;
+      background: linear-gradient(90deg, rgba(102,252,241,0.12), rgba(155,92,246,0.12));
+      box-shadow: 0 6px 30px rgba(102,252,241,0.02);
+    }
+
+    /* ======= FOOTER ======= */
+    footer{
+      margin-top:40px; padding:28px 20px; background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(2,6,23,0.55)); color:var(--muted);
+      border-top: 1px solid rgba(255,255,255,0.02);
+    }
+    footer .foot-inner{ max-width:1100px; margin:0 auto; display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap; }
+    footer p{ font-size:0.94rem; color:#9fb6bd; }
+
+    /* small helpers */
+    .muted{ color:#9fb6bd; }
+    .small{ font-size:0.9rem; color:#9fb6bd; }
+
+    .question-section{
+      margin-bottom:32px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="brand" aria-label="brand">
+        <div class="logo">F</div>
+        <h1>FPGA · Blockchain · Big Data</h1>
+      </div>
+
+      <button class="hamburger" id="hamburgerBtn" aria-label="menu">☰</button>
+
+      <nav id="mainNav" aria-label="main-navigation">
+        <a href="index.html" class="nav-link">Inicio</a>
+        <a href="index.html#historia" class="nav-link">Historia</a>
+        <a href="index.html#usos" class="nav-link">Usos</a>
+        <a href="index.html#ventajas" class="nav-link">Ventajas</a>
+        <a href="index.html#construccion" class="nav-link">Construcción</a>
+        <a href="index.html#criptomonedas" class="nav-link">Criptomonedas</a>
+        <a href="index.html#futuro" class="nav-link">Futuro</a>
+        <a href="index.html#conclusion" class="nav-link">Conclusión</a>
+        <a href="index.html#videos" class="nav-link">Videos</a>
+        <a href="desarrollo-sostenible.html" class="nav-link active">Desarrollo Sostenible</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- INTRODUCCIÓN -->
+    <section id="introduccion" class="in-view">
+      <div class="section-inner">
+        <h2>Desarrollo Sostenible</h2>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p class="lead">El desarrollo sostenible es un modelo que busca satisfacer las necesidades actuales sin comprometer los recursos y posibilidades de las generaciones futuras. Integra tres pilares fundamentales: crecimiento económico, bienestar social y protección ambiental.</p>
+      </div>
+    </section>
+
+    <!-- PREGUNTA 1 -->
+    <section id="pregunta1" class="question-section">
+      <div class="section-inner">
+        <h3>¿Qué es el desarrollo sostenible?</h3>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p>El desarrollo sostenible es un modelo que busca satisfacer las necesidades actuales sin comprometer los recursos y posibilidades de las generaciones futuras. Integra tres pilares: crecimiento económico, bienestar social y protección ambiental.</p>
+      </div>
+    </section>
+
+    <!-- PREGUNTA 2 -->
+    <section id="pregunta2" class="question-section">
+      <div class="section-inner">
+        <h3>¿Los Objetivos de Desarrollo Sostenible son jurídicamente obligatorios?</h3>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p>No. Los ODS no son legalmente obligatorios. Son compromisos voluntarios adoptados por los países miembros de la ONU. Sin embargo, muchos gobiernos los incluyen dentro de sus planes nacionales, políticas públicas y leyes internas.</p>
+      </div>
+    </section>
+
+    <!-- PREGUNTA 3 -->
+    <section id="pregunta3" class="question-section">
+      <div class="section-inner">
+        <h3>¿Cómo se aplican los Objetivos de Desarrollo Sostenible?</h3>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p>La aplicación depende de cada país e incluye:</p>
+        <ul>
+          <li>Integrar los ODS en políticas, planes de desarrollo y presupuestos.</li>
+          <li>Ejecutar programas en salud, educación, igualdad, ambiente, economía y más.</li>
+          <li>Colaborar con empresas, comunidades, universidades y organizaciones sociales.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- PREGUNTA 4 -->
+    <section id="pregunta4" class="question-section">
+      <div class="section-inner">
+        <h3>¿Cómo se supervisarán los Objetivos de Desarrollo Sostenible?</h3>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p>La supervisión se realiza mediante:</p>
+        <ul>
+          <li>Informes nacionales voluntarios presentados ante la ONU.</li>
+          <li>Indicadores estadísticos que miden avances en cada meta.</li>
+          <li>Sistemas de monitoreo implementados por gobiernos e instituciones independientes.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- PREGUNTA 5 -->
+    <section id="pregunta5" class="question-section">
+      <div class="section-inner">
+        <h3>¿Cuánto costará la aplicación de esta agenda de desarrollo sostenible?</h3>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p>La implementación global requiere billones de dólares al año. El financiamiento proviene de:</p>
+        <div class="grid-2">
+          <div class="card">
+            <ul>
+              <li>Inversión pública de los gobiernos.</li>
+              <li>Sector privado.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <ul>
+              <li>Cooperación internacional.</li>
+              <li>Organismos financieros multilaterales.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PREGUNTA 6 -->
+    <section id="pregunta6" class="question-section">
+      <div class="section-inner">
+        <h3>¿Cuál es la relación entre el cambio climático y el desarrollo sostenible?</h3>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p>El cambio climático amenaza el desarrollo sostenible al afectar ecosistemas, alimentos, salud y economía. A su vez, las acciones sostenibles —energías limpias, conservación, reducción de emisiones— ayudan a mitigar y adaptarse al cambio climático.</p>
+      </div>
+    </section>
+
+    <!-- PREGUNTA 7 -->
+    <section id="pregunta7" class="question-section">
+      <div class="section-inner">
+        <h3>¿En qué se diferencian los Objetivos de Desarrollo Sostenible de los Objetivos de Desarrollo del Milenio?</h3>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p>Los ODS (2015–2030) son más amplios y abarcan aspectos económicos, sociales y ambientales.</p>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Objetivos de Desarrollo Sostenible (ODS)</h3>
+            <ul>
+              <li>Incluyen a todos los países, no solo a los países en desarrollo.</li>
+              <li>Tienen 17 objetivos y 169 metas.</li>
+              <li>Período: 2015–2030.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Objetivos de Desarrollo del Milenio (ODM)</h3>
+            <ul>
+              <li>Enfocados principalmente en países en desarrollo.</li>
+              <li>Tenían 8 objetivos más enfocados en pobreza, salud y educación.</li>
+              <li>Período: 2000–2015.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PREGUNTA 8 -->
+    <section id="pregunta8" class="question-section">
+      <div class="section-inner">
+        <h3>¿Cuántos son los Objetivos del Desarrollo Sostenible?</h3>
+        <div class="accent-line" aria-hidden="true"></div>
+        <p>Son <strong>17 Objetivos de Desarrollo Sostenible</strong> establecidos por la ONU en la Agenda 2030.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTON VOLVER ARRIBA -->
+  <button id="toTopBtn" class="to-top hide" title="Volver arriba">↑</button>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="foot-inner">
+      <div>
+        <p><strong>© 2025 Innovación Digital</strong> | Página creada por ChatGPT</p>
+        <p class="small">Recursos: Xilinx · Ethereum · IBM Big Data</p>
+      </div>
+      <div>
+        <p class="small">Hecho con HTML, CSS y JavaScript puro · Diseño moderno y responsive</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======= SCRIPTS ======= -->
+  <script>
+    // Simple JS to handle scroll animations, active nav link, hamburger and back-to-top button
+
+    // helper: select
+    const $ = (q, all = false) => all ? document.querySelectorAll(q) : document.querySelector(q);
+
+    // Sections observe for reveal on scroll
+    const sections = document.querySelectorAll('main section');
+    const options = { root: null, rootMargin: '0px', threshold: 0.12 };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+        }
+      });
+    }, options);
+
+    sections.forEach(s => observer.observe(s));
+
+    // Active nav link highlight on scroll
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sectionMap = {};
+    navLinks.forEach(a => {
+      const href = a.getAttribute('href');
+      if(href && href.startsWith('#')){
+        sectionMap[href] = document.querySelector(href);
+      }
+    });
+
+    function setActiveLink(){
+      const scrollPos = window.scrollY + window.innerHeight * 0.25;
+      let currentId = '';
+      for(const id in sectionMap){
+        const sec = sectionMap[id];
+        if(sec && sec.offsetTop <= scrollPos){
+          currentId = id;
+        }
+      }
+      navLinks.forEach(l => l.classList.remove('active'));
+      if(currentId){
+        const match = document.querySelector('nav a[href="'+currentId+'"]');
+        if(match) match.classList.add('active');
+      }
+    }
+
+    window.addEventListener('scroll', setActiveLink);
+    window.addEventListener('load', setActiveLink);
+
+    // Back to top button logic
+    const toTopBtn = document.getElementById('toTopBtn');
+    window.addEventListener('scroll', () => {
+      if(window.scrollY > 350){
+        toTopBtn.classList.remove('hide');
+      } else {
+        toTopBtn.classList.add('hide');
+      }
+    });
+
+    toTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // Hamburger for mobile
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mainNav = document.getElementById('mainNav');
+    hamburgerBtn.addEventListener('click', () => {
+      mainNav.classList.toggle('show');
+    });
+
+    // Close mobile nav when clicking a link
+    document.querySelectorAll('nav a').forEach(a => {
+      a.addEventListener('click', () => mainNav.classList.remove('show'));
+    });
+
+    // Smooth in-page anchors (for some browsers)
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e){
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if(target) {
+          const y = target.getBoundingClientRect().top + window.scrollY - 12;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      });
+    });
+
+  </script>
+</body>
+</html>
+
